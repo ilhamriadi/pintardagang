@@ -1,141 +1,423 @@
-# 🚀 Welcome to Z.ai Code Scaffold
+# 🛍️ PintarDagang - Super App Ekonomi Kreatif
 
-A modern, production-ready web application scaffold powered by cutting-edge technologies, designed to accelerate your development with [Z.ai](https://chat.z.ai)'s AI-powered coding assistance.
+<div align="center">
 
-## ✨ Technology Stack
+![PintarDagang Logo](https://via.placeholder.com/200x80/4F46E5/FFFFFF?text=PintarDagang)
 
-This scaffold provides a robust foundation built with:
+**Platform terintegrasi untuk Jual Beli, Edukasi, dan Filantropi**
 
-### 🎯 Core Framework
-- **⚡ Next.js 15** - The React framework for production with App Router
-- **📘 TypeScript 5** - Type-safe JavaScript for better developer experience
-- **🎨 Tailwind CSS 4** - Utility-first CSS framework for rapid UI development
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
 
-### 🧩 UI Components & Styling
-- **🧩 shadcn/ui** - High-quality, accessible components built on Radix UI
-- **🎯 Lucide React** - Beautiful & consistent icon library
-- **🌈 Framer Motion** - Production-ready motion library for React
-- **🎨 Next Themes** - Perfect dark mode in 2 lines of code
+[Demo](https://pintardagang.vercel.app) • [Documentation](#documentation) • [Report Bug](https://github.com/ilhamriadi/pintardagang/issues) • [Request Feature](https://github.com/ilhamriadi/pintardagang/issues)
 
-### 📋 Forms & Validation
-- **🎣 React Hook Form** - Performant forms with easy validation
-- **✅ Zod** - TypeScript-first schema validation
+</div>
 
-### 🔄 State Management & Data Fetching
-- **🐻 Zustand** - Simple, scalable state management
-- **🔄 TanStack Query** - Powerful data synchronization for React
-- **🌐 Axios** - Promise-based HTTP client
+---
 
-### 🗄️ Database & Backend
-- **🗄️ Prisma** - Next-generation Node.js and TypeScript ORM
-- **🔐 NextAuth.js** - Complete open-source authentication solution
+## 📖 Tentang
 
-### 🎨 Advanced UI Features
-- **📊 TanStack Table** - Headless UI for building tables and datagrids
-- **🖱️ DND Kit** - Modern drag and drop toolkit for React
-- **📊 Recharts** - Redefined chart library built with React and D3
-- **🖼️ Sharp** - High performance image processing
+**PintarDagang** adalah super app ekosistem ekonomi kreatif yang mengintegrasikan tiga pilar utama dalam satu platform:
 
-### 🌍 Internationalization & Utilities
-- **🌍 Next Intl** - Internationalization library for Next.js
-- **📅 Date-fns** - Modern JavaScript date utility library
-- **🪝 ReactUse** - Collection of essential React hooks for modern development
+### 🎯 Tiga Pilar Utama
 
-## 🎯 Why This Scaffold?
+1. **🛍️ Marketplace** - Platform jual beli produk UMKM
+2. **🎓 Edukasi** - Kursus online dengan instruktur profesional  
+3. **❤️ Filantropi** - Kampanye donasi dan sosial
 
-- **🏎️ Fast Development** - Pre-configured tooling and best practices
-- **🎨 Beautiful UI** - Complete shadcn/ui component library with advanced interactions
-- **🔒 Type Safety** - Full TypeScript configuration with Zod validation
-- **📱 Responsive** - Mobile-first design principles with smooth animations
-- **🗄️ Database Ready** - Prisma ORM configured for rapid backend development
-- **🔐 Auth Included** - NextAuth.js for secure authentication flows
-- **📊 Data Visualization** - Charts, tables, and drag-and-drop functionality
-- **🌍 i18n Ready** - Multi-language support with Next Intl
-- **🚀 Production Ready** - Optimized build and deployment settings
-- **🤖 AI-Friendly** - Structured codebase perfect for AI assistance
+### 🌟 Fitur Unggulan
+
+- **Single Sign-On** - Satu akun untuk semua modul
+- **Digital Wallet** - Sistem pembayaran terintegrasi
+- **Real-time Chat** - Komunikasi antar pengguna
+- **Notifications** - Notifikasi terpadu untuk semua aktivitas
+- **Responsive Design** - Optimal di desktop dan mobile
+- **TypeScript** - Type safety dan maintainability
+- **Modern UI** - Menggunakan shadcn/ui components
+
+---
 
 ## 🚀 Quick Start
 
+### Prerequisites
+
+- Node.js 18+ 
+- npm atau yarn
+- Git
+
+### Installation
+
+1. **Clone repository**
 ```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
+git clone https://github.com/ilhamriadi/pintardagang.git
+cd pintardagang
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see your application running.
+2. **Install dependencies**
+```bash
+npm install
+```
 
-## 🤖 Powered by Z.ai
+3. **Setup environment variables**
+```bash
+cp .env.example .env.local
+```
 
-This scaffold is optimized for use with [Z.ai](https://chat.z.ai) - your AI assistant for:
+Edit `.env.local`:
+```env
+DATABASE_URL="file:./db/dev.db"
+JWT_SECRET="your-jwt-secret"
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-nextauth-secret"
+```
 
-- **💻 Code Generation** - Generate components, pages, and features instantly
-- **🎨 UI Development** - Create beautiful interfaces with AI assistance  
-- **🔧 Bug Fixing** - Identify and resolve issues with intelligent suggestions
-- **📝 Documentation** - Auto-generate comprehensive documentation
-- **🚀 Optimization** - Performance improvements and best practices
+4. **Setup database**
+```bash
+npx prisma generate
+npx prisma db push
+```
 
-Ready to build something amazing? Start chatting with Z.ai at [chat.z.ai](https://chat.z.ai) and experience the future of AI-powered development!
+5. **Run development server**
+```bash
+npm run dev
+```
+
+6. **Buka [http://localhost:3000](http://localhost:3000)**
+
+---
+
+## 🏗️ Teknologi Stack
+
+### Frontend
+- **Next.js 15** - React framework dengan App Router
+- **TypeScript 5** - Type safety
+- **Tailwind CSS 4** - Utility-first CSS
+- **shadcn/ui** - Modern UI components
+- **Framer Motion** - Animasi
+- **Lucide React** - Icon library
+
+### Backend
+- **Next.js API Routes** - Serverless API
+- **Prisma ORM** - Database ORM
+- **SQLite** - Database (development)
+- **bcryptjs** - Password hashing
+- **JWT** - Authentication
+- **Socket.io** - Real-time communication
+
+### Tools & DevOps
+- **ESLint** - Code linting
+- **PM2** - Process manager (production)
+- **Nginx** - Reverse proxy
+- **Let's Encrypt** - SSL certificates
+
+---
 
 ## 📁 Project Structure
 
 ```
 src/
-├── app/                 # Next.js App Router pages
-├── components/          # Reusable React components
-│   └── ui/             # shadcn/ui components
-├── hooks/              # Custom React hooks
-└── lib/                # Utility functions and configurations
+├── app/                    # Next.js App Router
+│   ├── api/               # API routes
+│   │   ├── auth/          # Authentication endpoints
+│   │   ├── marketplace/   # Marketplace APIs
+│   │   ├── edukasi/       # Education APIs
+│   │   └── filantropi/    # Donation APIs
+│   ├── marketplace/       # Marketplace pages
+│   ├── edukasi/           # Education pages
+│   ├── filantropi/        # Donation pages
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx           # Homepage
+├── components/            # React components
+│   ├── layout/           # Layout components
+│   │   ├── header.tsx    # Navigation header
+│   │   └── footer.tsx    # Footer
+│   └── ui/               # shadcn/ui components
+├── lib/                  # Utility libraries
+│   ├── db.ts            # Database client
+│   └── utils.ts         # Helper functions
+└── hooks/               # Custom React hooks
 ```
-
-## 🎨 Available Features & Components
-
-This scaffold includes a comprehensive set of modern web development tools:
-
-### 🧩 UI Components (shadcn/ui)
-- **Layout**: Card, Separator, Aspect Ratio, Resizable Panels
-- **Forms**: Input, Textarea, Select, Checkbox, Radio Group, Switch
-- **Feedback**: Alert, Toast (Sonner), Progress, Skeleton
-- **Navigation**: Breadcrumb, Menubar, Navigation Menu, Pagination
-- **Overlay**: Dialog, Sheet, Popover, Tooltip, Hover Card
-- **Data Display**: Badge, Avatar, Calendar
-
-### 📊 Advanced Data Features
-- **Tables**: Powerful data tables with sorting, filtering, pagination (TanStack Table)
-- **Charts**: Beautiful visualizations with Recharts
-- **Forms**: Type-safe forms with React Hook Form + Zod validation
-
-### 🎨 Interactive Features
-- **Animations**: Smooth micro-interactions with Framer Motion
-- **Drag & Drop**: Modern drag-and-drop functionality with DND Kit
-- **Theme Switching**: Built-in dark/light mode support
-
-### 🔐 Backend Integration
-- **Authentication**: Ready-to-use auth flows with NextAuth.js
-- **Database**: Type-safe database operations with Prisma
-- **API Client**: HTTP requests with Axios + TanStack Query
-- **State Management**: Simple and scalable with Zustand
-
-### 🌍 Production Features
-- **Internationalization**: Multi-language support with Next Intl
-- **Image Optimization**: Automatic image processing with Sharp
-- **Type Safety**: End-to-end TypeScript with Zod validation
-- **Essential Hooks**: 100+ useful React hooks with ReactUse for common patterns
-
-## 🤝 Get Started with Z.ai
-
-1. **Clone this scaffold** to jumpstart your project
-2. **Visit [chat.z.ai](https://chat.z.ai)** to access your AI coding assistant
-3. **Start building** with intelligent code generation and assistance
-4. **Deploy with confidence** using the production-ready setup
 
 ---
 
-Built with ❤️ for the developer community. Supercharged by [Z.ai](https://chat.z.ai) 🚀
+## 🗄️ Database Schema
+
+Database menggunakan Prisma dengan 25+ tabel yang mencakup:
+
+### Core System
+- `users` - User management dengan role-based access
+- `wallets` - Digital wallet system
+- `notifications` - Notification system
+
+### E-commerce Module
+- `stores` - Store management
+- `products` - Product catalog
+- `orders` - Order processing
+- `payments` - Payment tracking
+- `reviews` - Rating & review system
+
+### Education Module  
+- `courses` - Course management
+- `lessons` - Course content
+- `enrollments` - Student enrollment
+- `course_reviews` - Course ratings
+
+### Filantropi Module
+- `campaigns` - Donation campaigns
+- `donations` - Donation tracking
+- `campaign_updates` - Progress updates
+
+### Communication
+- `messages` - Internal messaging
+- `notifications` - Push notifications
+
+[Lihat full schema](./prisma/schema.prisma)
+
+---
+
+## 🔧 Development
+
+### Available Scripts
+
+```bash
+# Development
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+
+# Database
+npm run db:push      # Push schema to database
+npm run db:generate  # Generate Prisma client
+npm run db:migrate   # Run migrations
+npm run db:reset     # Reset database
+
+# Production
+npm run build        # Build application
+npm run start        # Start production server
+```
+
+### Environment Variables
+
+Copy `.env.example` ke `.env.local` dan konfigurasi:
+
+```env
+# Database
+DATABASE_URL="file:./db/dev.db"
+
+# Authentication
+JWT_SECRET="your-super-secret-jwt-key"
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-nextauth-secret"
+
+# Payment Gateway (optional)
+MIDTRANS_SERVER_KEY="your-midtrans-key"
+MIDTRANS_CLIENT_KEY="your-midtrans-key"
+
+# Email Service (optional)
+RESEND_API_KEY="your-resend-key"
+
+# File Upload (optional)
+CLOUDINARY_CLOUD_NAME="your-cloudinary"
+CLOUDINARY_API_KEY="your-api-key"
+CLOUDINARY_API_SECRET="your-api-secret"
+```
+
+---
+
+## 🚀 Deployment
+
+### VPS Deployment (Recommended)
+
+1. **Clone repository di VPS**
+```bash
+git clone https://github.com/ilhamriadi/pintardagang.git
+cd pintardagang
+```
+
+2. **Install dependencies**
+```bash
+npm install
+npm install -g pm2
+```
+
+3. **Setup production environment**
+```bash
+cp .env.example .env.production
+# Edit .env.production dengan production values
+```
+
+4. **Build dan start**
+```bash
+npm run build
+pm2 start ecosystem.config.js
+```
+
+5. **Setup Nginx reverse proxy**
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com;
+    
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+### Platform Deployment
+
+- **Vercel** (Recommended untuk Next.js)
+- **Railway**
+- **DigitalOcean App Platform**
+- **AWS EC2**
+
+---
+
+## 📊 API Documentation
+
+### Authentication Endpoints
+
+#### Register User
+```http
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "name": "User Name",
+  "role": "USER" | "SELLER" | "INSTRUCTOR"
+}
+```
+
+#### Login
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+### Marketplace Endpoints
+
+#### Get Products
+```http
+GET /api/marketplace/products?page=1&limit=12&category=fashion&search=baju
+```
+
+#### Create Product
+```http
+POST /api/marketplace/products
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "name": "Product Name",
+  "price": 100000,
+  "categoryId": "category-id",
+  "storeId": "store-id"
+}
+```
+
+[Full API Documentation](./docs/api.md)
+
+---
+
+## 🎨 UI Components
+
+Aplikasi menggunakan **shadcn/ui** components yang fully customizable:
+
+- **Navigation** - Multi-level navigation menu
+- **Cards** - Product, course, dan campaign cards
+- **Forms** - Registration, login, dan checkout forms
+- **Modals** - Product preview dan donation modals
+- **Tables** - Order history dan admin dashboards
+- **Charts** - Analytics dan reporting
+
+---
+
+## 🔒 Security Features
+
+- **JWT Authentication** - Secure token-based auth
+- **Password Hashing** - bcryptjs encryption
+- **CORS Protection** - Cross-origin resource sharing
+- **Input Validation** - Zod schema validation
+- **SQL Injection Prevention** - Prisma ORM protection
+- **XSS Protection** - Content Security Policy
+- **Rate Limiting** - API rate limiting (planned)
+
+---
+
+## 🌍 Browser Support
+
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+
+---
+
+## 🤝 Contributing
+
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+### How to Contribute
+
+1. **Fork the Project**
+2. **Create your Feature Branch** (`git checkout -b feature/AmazingFeature`)
+3. **Commit your Changes** (`git commit -m 'Add some AmazingFeature'`)
+4. **Push to the Branch** (`git push origin feature/AmazingFeature`)
+5. **Open a Pull Request**
+
+### Development Guidelines
+
+- Follow TypeScript best practices
+- Use ESLint configuration
+- Write meaningful commit messages
+- Update documentation for changes
+- Test your changes thoroughly
+
+---
+
+## 📝 License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+
+---
+
+## 🙏 Acknowledgments
+
+- [Next.js](https://nextjs.org/) - The React framework
+- [Prisma](https://www.prisma.io/) - Next-generation ORM
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
+- [shadcn/ui](https://ui.shadcn.com/) - Beautiful UI components
+- [Lucide](https://lucide.dev/) - Beautiful icons
+
+---
+
+## 📞 Contact
+
+**Ilham Riadi** - [@ilhamriadi](https://github.com/ilhamriadi)
+
+Project Link: [https://github.com/ilhamriadi/pintardagang](https://github.com/ilhamriadi/pintardagang)
+
+---
+
+<div align="center">
+
+**⭐ Jika bermanfaat, jangan lupa kasih bintang!**
+
+Made with ❤️ by [Ilham Riadi](https://github.com/ilhamriadi)
+
+</div>
