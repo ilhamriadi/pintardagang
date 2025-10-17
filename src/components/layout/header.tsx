@@ -38,9 +38,12 @@ import {
   Wallet
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/components/auth-context";
+import { LoginForm } from "@/components/login-form";
 
 export function Header() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const { user, logout, isLoading } = useAuth();
 
   const navigationItems = [
     {
@@ -175,22 +178,22 @@ export function Header() {
           </Button>
 
           {/* User Menu */}
-          {isLoggedIn ? (
+          {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="/avatars/01.png" alt="@user" />
-                    <AvatarFallback>U</AvatarFallback>
+                    <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">User Name</p>
+                    <p className="text-sm font-medium leading-none">{user.name}</p>
                     <p className="text-xs leading-none text-muted-foreground">
-                      user@example.com
+                      {user.email}
                     </p>
                   </div>
                 </DropdownMenuLabel>
@@ -205,7 +208,11 @@ export function Header() {
                 ))}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
-                  <Button variant="ghost" className="w-full justify-start p-0 h-auto">
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start p-0 h-auto"
+                    onClick={logout}
+                  >
                     Keluar
                   </Button>
                 </DropdownMenuItem>
@@ -213,11 +220,11 @@ export function Header() {
             </DropdownMenu>
           ) : (
             <div className="flex items-center space-x-2">
-              <Button variant="ghost" asChild>
-                <Link href="/auth/login">Masuk</Link>
+              <Button variant="ghost" onClick={() => setShowLoginModal(true)}>
+                Masuk
               </Button>
-              <Button asChild>
-                <Link href="/auth/register">Daftar</Link>
+              <Button onClick={() => setShowLoginModal(true)}>
+                Daftar
               </Button>
             </div>
           )}
@@ -265,13 +272,13 @@ export function Header() {
                   ))}
                 </nav>
 
-                {!isLoggedIn && (
+                {!user && (
                   <div className="flex flex-col space-y-2 pt-4 border-t">
-                    <Button variant="outline" asChild className="w-full">
-                      <Link href="/auth/login">Masuk</Link>
+                    <Button variant="outline" onClick={() => setShowLoginModal(true)} className="w-full">
+                      Masuk
                     </Button>
-                    <Button asChild className="w-full">
-                      <Link href="/auth/register">Daftar</Link>
+                    <Button onClick={() => setShowLoginModal(true)} className="w-full">
+                      Daftar
                     </Button>
                   </div>
                 )}
@@ -280,6 +287,16 @@ export function Header() {
           </Sheet>
         </div>
       </div>
+
+      {/* Login Modal */}
+      {showLoginModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowLoginModal(false)} />
+          <div className="relative z-10 w-full max-w-md mx-4">
+            <LoginForm onClose={() => setShowLoginModal(false)} />
+          </div>
+        </div>
+      )}
     </header>
   );
 }
