@@ -1,0 +1,555 @@
+// Super App Database Schema - PintarDagang
+// 3 Pilar: E-commerce, Edukasi, Filantropi
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============= CORE USER SYSTEM =============
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  password    String
+  name        String
+  phone       String?
+  avatar      String?
+  role        UserRole @default(USER)
+  isVerified  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Wallet & Balance
+  wallet      Wallet?
+  
+  // E-commerce Relations
+  store       Store?
+  orders      Order[]
+  reviews     Review[]
+  cartItems   CartItem[]
+  
+  // Education Relations
+  instructorCourses Course[] @relation("InstructorCourses")
+  enrollments       Enrollment[]
+  courseReviews     CourseReview[]
+  
+  // Donation Relations
+  donations         Donation[]
+  campaigns         Campaign[]
+  
+  // Communication
+  sentMessages      Message[] @relation("SentMessages")
+  receivedMessages  Message[] @relation("ReceivedMessages")
+  notifications     Notification[]
+
+  @@map("users")
+}
+
+model Wallet {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  balance       Float    @default(0)
+  totalEarned   Float    @default(0)
+  totalSpent    Float    @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions  WalletTransaction[]
+  
+  @@map("wallets")
+}
+
+model WalletTransaction {
+  id          String           @id @default(cuid())
+  walletId    String
+  type        TransactionType
+  amount      Float
+  description String
+  reference   String? // Order ID, Course ID, etc.
+  createdAt   DateTime         @default(now())
+  
+  wallet      Wallet           @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  
+  @@map("wallet_transactions")
+}
+
+// ============= E-COMMERCE MODULE =============
+model Store {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  name        String
+  description String?
+  logo        String?
+  banner      String?
+  address     String?
+  isVerified  Boolean  @default(false)
+  rating      Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  owner       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products    Product[]
+  
+  @@map("stores")
+}
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  slug        String     @unique
+  description String?
+  icon        String?
+  parentId    String?
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  
+  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  products    Product[]
+  
+  @@map("categories")
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  storeId     String
+  categoryId  String
+  name        String
+  slug        String
+  description String?
+  price       Float
+  comparePrice Float?     // Original price for discount display
+  cost        Float?      // Cost price for profit calculation
+  sku         String?     @unique
+  trackStock  Boolean     @default(true)
+  stock       Int         @default(0)
+  images      String?     // JSON array of image URLs
+  status      ProductStatus @default(DRAFT)
+  featured    Boolean     @default(false)
+  rating      Float       @default(0)
+  salesCount  Int         @default(0)
+  weight      Float?      // For shipping calculation
+  dimensions  String?     // JSON: {length, width, height}
+  tags        String?     // JSON array for search
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  store       Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  category    Category    @relation(fields: [categoryId], references: [id])
+  orderItems  OrderItem[]
+  reviews     Review[]
+  cartItems   CartItem[]
+  
+  @@map("products")
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, productId])
+  @@map("cart_items")
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  orderNumber   String      @unique
+  userId        String
+  status        OrderStatus @default(PENDING)
+  paymentStatus PaymentStatus @default(PENDING)
+  paymentMethod String?
+  subtotal      Float
+  shippingCost  Float       @default(0)
+  tax           Float       @default(0)
+  discount      Float       @default(0)
+  total         Float
+  notes         String?
+  shippingAddress String?    // JSON: {name, phone, address, city, province, postalCode}
+  trackingNumber String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  customer      User        @relation(fields: [userId], references: [id])
+  items         OrderItem[]
+  payment       Payment?
+  
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+  total     Float
+  createdAt DateTime @default(now())
+  
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id])
+  
+  @@map("order_items")
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  orderId       String        @unique
+  paymentMethod PaymentMethod
+  amount        Float
+  status        PaymentStatus
+  gatewayRef    String?       // Payment gateway reference
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  @@map("payments")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  rating    Int      // 1-5
+  comment   String?
+  images    String? // JSON array of image URLs
+  isVerified Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, productId])
+  @@map("reviews")
+}
+
+// ============= EDUCATION MODULE =============
+model Course {
+  id          String       @id @default(cuid())
+  instructorId String
+  categoryId  String
+  title       String
+  slug        String       @unique
+  description String
+  shortDesc   String?
+  thumbnail   String?
+  price       Float
+  comparePrice Float?      // Original price for discount
+  level       CourseLevel  @default(BEGINNER)
+  language    String       @default("id")
+  duration    Int?         // Duration in minutes
+  status      CourseStatus @default(DRAFT)
+  featured    Boolean      @default(false)
+  rating      Float        @default(0)
+  studentsCount Int        @default(0)
+  requirements String?    // JSON array
+  whatYouLearn String?    // JSON array
+  tags        String?     // JSON array for search
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
+  instructor  User         @relation("InstructorCourses", fields: [instructorId], references: [id])
+  category    CourseCategory @relation(fields: [categoryId], references: [id])
+  lessons     Lesson[]
+  enrollments Enrollment[]
+  reviews     CourseReview[]
+  
+  @@map("courses")
+}
+
+model CourseCategory {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  slug        String           @unique
+  description String?
+  icon        String?
+  isActive    Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  
+  courses     Course[]
+  
+  @@map("course_categories")
+}
+
+model Lesson {
+  id          String     @id @default(cuid())
+  courseId    String
+  title       String
+  description String?
+  content     String?    // Rich text content
+  videoUrl    String?
+  duration    Int?       // Duration in seconds
+  order       Int
+  isPreview   Boolean    @default(false)
+  isPublished Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  
+  course      Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress    LessonProgress[]
+  
+  @@map("lessons")
+}
+
+model Enrollment {
+  id         String   @id @default(cuid())
+  userId     String
+  courseId   String
+  progress   Float    @default(0) // 0-100
+  completed  Boolean  @default(false)
+  enrolledAt DateTime @default(now())
+  completedAt DateTime?
+  
+  user       User     @relation(fields: [userId], references: [id])
+  course     Course   @relation(fields: [courseId], references: [id])
+  lessons    LessonProgress[]
+  
+  @@unique([userId, courseId])
+  @@map("enrollments")
+}
+
+model LessonProgress {
+  id           String   @id @default(cuid())
+  enrollmentId String
+  lessonId     String
+  completed    Boolean  @default(false)
+  completedAt  DateTime?
+  watchTime    Int      @default(0) // Seconds watched
+  
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  lesson       Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  
+  @@unique([enrollmentId, lessonId])
+  @@map("lesson_progress")
+}
+
+model CourseReview {
+  id        String   @id @default(cuid())
+  userId    String
+  courseId  String
+  rating    Int      // 1-5
+  comment   String?
+  isVerified Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, courseId])
+  @@map("course_reviews")
+}
+
+// ============= DONATION MODULE =============
+model Campaign {
+  id          String        @id @default(cuid())
+  organizerId String
+  title       String
+  slug        String        @unique
+  description String
+  shortDesc   String?
+  thumbnail   String?
+  images      String?      // JSON array of image URLs
+  categoryId  String
+  goalAmount  Float
+  currentAmount Float       @default(0)
+  startDate   DateTime
+  endDate     DateTime
+  status      CampaignStatus @default(DRAFT)
+  featured    Boolean       @default(false)
+  isVerified  Boolean       @default(false)
+  bankAccount String?       // JSON: {bankName, accountNumber, accountName}
+  updates     CampaignUpdate[]
+  donations   Donation[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  organizer   User          @relation(fields: [organizerId], references: [id])
+  category    CampaignCategory @relation(fields: [categoryId], references: [id])
+  
+  @@map("campaigns")
+}
+
+model CampaignCategory {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  slug        String           @unique
+  description String?
+  icon        String?
+  isActive    Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  
+  campaigns   Campaign[]
+  
+  @@map("campaign_categories")
+}
+
+model CampaignUpdate {
+  id         String   @id @default(cuid())
+  campaignId String
+  title      String
+  content    String
+  images     String? // JSON array of image URLs
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  
+  @@map("campaign_updates")
+}
+
+model Donation {
+  id         String       @id @default(cuid())
+  campaignId String
+  donorId    String
+  amount     Float
+  message    String?
+  isAnonymous Boolean     @default(false)
+  status     DonationStatus @default(PENDING)
+  paymentMethod String?
+  paymentRef String?      // Payment gateway reference
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  
+  campaign   Campaign     @relation(fields: [campaignId], references: [id])
+  donor      User         @relation(fields: [donorId], references: [id])
+  
+  @@map("donations")
+}
+
+// ============= COMMUNICATION MODULE =============
+model Message {
+  id         String      @id @default(cuid())
+  senderId   String
+  receiverId String
+  content    String
+  type       MessageType @default(TEXT)
+  fileUrl    String?
+  isRead     Boolean     @default(false)
+  createdAt  DateTime    @default(now())
+  
+  sender     User        @relation("SentMessages", fields: [senderId], references: [id])
+  receiver   User        @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  
+  @@map("messages")
+}
+
+model Notification {
+  id         String           @id @default(cuid())
+  userId     String
+  title      String
+  message    String
+  type       NotificationType
+  data       String?          // JSON data for related entity
+  isRead     Boolean          @default(false)
+  createdAt  DateTime         @default(now())
+  
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("notifications")
+}
+
+// ============= ENUMS =============
+enum UserRole {
+  USER
+  SELLER
+  INSTRUCTOR
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+  REFUND
+}
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+  OUT_OF_STOCK
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  WALLET
+  BANK_TRANSFER
+  CREDIT_CARD
+  E_WALLET
+}
+
+enum CourseLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum DonationStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+}
+
+enum NotificationType {
+  ORDER
+  PAYMENT
+  COURSE
+  DONATION
+  MESSAGE
+  SYSTEM
+}
